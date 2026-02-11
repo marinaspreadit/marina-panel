@@ -30,3 +30,11 @@ export const events = pgTable("events", {
   detail: text("detail").notNull().default(""),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+export const taskComments = pgTable("task_comments", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  taskId: uuid("task_id").notNull(),
+  author: text("author").notNull().default("Joel"),
+  body: text("body").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});

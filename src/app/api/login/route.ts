@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { logEvent } from "@/lib/events";
+
 export async function POST(req: Request) {
   const { password, next } = (await req.json()) as {
     password?: string;
@@ -17,6 +19,8 @@ export async function POST(req: Request) {
   if (!password || password !== pass) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
+
+  await logEvent({ kind: "info", title: "Login", detail: "Panel session started" });
 
   const res = NextResponse.json({ ok: true, next: next || "/" });
   res.cookies.set("mp_auth", pass, {

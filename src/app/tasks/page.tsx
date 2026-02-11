@@ -74,9 +74,15 @@ export default async function TasksPage() {
                     items.map((t) => (
                       <div
                         key={t.id}
-                        className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-slate-100"
+                        className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-slate-100"
                       >
-                        {t.title}
+                        <div className="min-w-0 truncate">{t.title}</div>
+                        <a
+                          href={`/tasks/${t.id}`}
+                          className="shrink-0 text-xs text-blue-300 hover:text-blue-200"
+                        >
+                          Open
+                        </a>
                       </div>
                     ))
                   )}
