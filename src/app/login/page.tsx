@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-import { AppShell } from "@/components/shell/app-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -29,7 +28,7 @@ export default function LoginPage() {
     });
 
     if (!res.ok) {
-      setErr("Password incorrecta");
+      setErr("Incorrect password");
       return;
     }
 
@@ -38,8 +37,17 @@ export default function LoginPage() {
   }
 
   return (
-    <AppShell>
+    <div className="min-h-screen bg-slate-50 px-4 py-16">
       <div className="mx-auto max-w-md">
+        <div className="mb-6 text-center">
+          <div className="text-sm font-semibold tracking-tight text-slate-900">
+            Marina Panel
+          </div>
+          <div className="mt-1 text-sm text-slate-600">
+            Sign in with the panel password
+          </div>
+        </div>
+
         <Card>
           <CardHeader>
             <CardTitle>Login</CardTitle>
@@ -66,6 +74,6 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </div>
-    </AppShell>
+    </div>
   );
 }
