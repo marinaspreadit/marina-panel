@@ -15,6 +15,13 @@ async function createTask(formData: FormData) {
 
   const db = requireDb();
   await db.insert(tasks).values({ title, status: "TODO" });
+
+  const { logEvent } = await import("@/lib/events");
+  await logEvent({
+    kind: "success",
+    title: "Task created",
+    detail: title,
+  });
 }
 
 export default async function TasksPage() {

@@ -22,3 +22,11 @@ export const artifacts = pgTable("artifacts", {
   url: text("url").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+export const events = pgTable("events", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  kind: text("kind").notNull().default("info"),
+  title: text("title").notNull(),
+  detail: text("detail").notNull().default(""),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
