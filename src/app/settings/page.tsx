@@ -1,26 +1,26 @@
 import { AppShell } from "@/components/shell/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function JobsPage() {
+export default function SettingsPage() {
   return (
     <AppShell>
       <div className="mx-auto max-w-6xl space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Jobs</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Runs + artifacts (CSV). DB wiring next.
+            Auth, DB, email providers.
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Coming next</CardTitle>
+            <CardTitle>Environment</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-slate-700">
             <ul className="list-disc space-y-1 pl-5">
-              <li>Run scraper with presets</li>
-              <li>History of runs</li>
-              <li>Artifact downloads</li>
+              <li>Neon DATABASE_URL (pending)</li>
+              <li>Auth secret + admin user (pending)</li>
+              <li>Resend API key (pending)</li>
             </ul>
           </CardContent>
         </Card>
