@@ -190,6 +190,11 @@ export default async function ScraperPage() {
   const db = requireDb();
   const taskId = await getOrCreateScraperTaskId();
 
+  const build = {
+    commit: process.env.VERCEL_GIT_COMMIT_SHA || process.env.GIT_COMMIT || "local",
+    env: process.env.VERCEL_ENV || process.env.NODE_ENV || "unknown",
+  };
+
   const recent = await db
     .select()
     .from(jobs)
@@ -210,8 +215,11 @@ export default async function ScraperPage() {
             Scraper
           </h1>
           <p className="mt-1 text-sm text-slate-300/80">
-            Run a scrape from the panel. This creates a Job and the runner will execute it.
+            Run and download results.
           </p>
+          <div className="mt-1 text-xs text-slate-400">
+            build: {build.env} · {build.commit.slice(0, 7)}
+          </div>
         </div>
 
         <Card>
