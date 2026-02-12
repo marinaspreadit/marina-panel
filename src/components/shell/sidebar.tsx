@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, ListTodo, PlaySquare, Settings } from "lucide-react";
+import { LayoutGrid, ListTodo, PlaySquare, Settings, Wrench } from "lucide-react";
 
 const coreItems = [{ href: "/", label: "Home", icon: LayoutGrid }];
 const opsItems = [
   { href: "/tasks", label: "Tasks", icon: ListTodo },
   { href: "/jobs", label: "Jobs", icon: PlaySquare },
+  { href: "/scraper", label: "Scraper", icon: Wrench },
 ];
 const systemItems = [{ href: "/settings", label: "Settings", icon: Settings }];
 
