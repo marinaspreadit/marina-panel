@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 import Link from "next/link";
 
@@ -240,6 +241,7 @@ export default async function TaskDetailPage({
                         <div className="grid gap-3">
                           <form
                             action={addArtifact.bind(null, j.id)}
+                            encType="multipart/form-data"
                             className="grid gap-2 md:grid-cols-[1fr_2fr_auto]"
                           >
                             <input
@@ -259,6 +261,7 @@ export default async function TaskDetailPage({
 
                           <form
                             action={addArtifact.bind(null, j.id)}
+                            encType="multipart/form-data"
                             className="grid gap-2 md:grid-cols-[1fr_2fr_auto]"
                           >
                             <input
