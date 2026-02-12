@@ -1,3 +1,7 @@
+export const dynamic = "force-dynamic";
+
+import Link from "next/link";
+
 import { AppShell } from "@/components/shell/app-shell";
 import { ActivityStream } from "@/components/activity-stream";
 import { Badge } from "@/components/ui/badge";
@@ -10,33 +14,69 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function Home() {
+import { requireDb } from "@/db";
+import { artifacts, events, jobs, tasks } from "@/db/schema";
+import { count, desc, eq } from "drizzle-orm";
+
+export default async function Home() {
+  const db = requireDb();
+
+  const [{ value: totalTasks } = { value: 0 }] = await db
+    .select({ value: count() })
+    .from(tasks);
+
+  const [{ value: activeJobs } = { value: 0 }] = await db
+    .select({ value: count() })
+    .from(jobs)
+    .where(eq(jobs.status, "RUNNING"));
+
+  const [{ value: totalArtifacts } = { value: 0 }] = await db
+    .select({ value: count() })
+    .from(artifacts);
+
+  const [{ value: totalEvents } = { value: 0 }] = await db
+    .select({ value: count() })
+    .from(events);
+
+  const nowTasks = await db
+    .select()
+    .from(tasks)
+    .where(eq(tasks.status, "IN_PROGRESS"))
+    .orderBy(desc(tasks.updatedAt))
+    .limit(8);
+
   return (
     <AppShell>
       <div className="mx-auto max-w-6xl space-y-6">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-50">
               Dashboard
             </h1>
             <p className="mt-1 text-sm text-slate-300/80">
-              Live operations: tasks, jobs, artifacts.
+              What’s happening now + downloads.
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="secondary">New task</Button>
-            <Button>Run scraper</Button>
+            <Link href="/tasks">
+              <Button>+ New task</Button>
+            </Link>
+            <Link href="/jobs">
+              <Button variant="secondary">Jobs</Button>
+            </Link>
           </div>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-slate-100">Total Tasks</CardTitle>
-              <CardDescription>All-time</CardDescription>
+              <CardTitle className="text-slate-100">Tasks</CardTitle>
+              <CardDescription>Total</CardDescription>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
-              <span className="text-2xl font-semibold text-slate-50">—</span>
+              <span className="text-2xl font-semibold text-slate-50">
+                {totalTasks}
+              </span>
               <Badge variant="blue">Live</Badge>
             </CardContent>
           </Card>
@@ -44,21 +84,25 @@ export default function Home() {
           <Card>
             <CardHeader>
               <CardTitle className="text-slate-100">Active Jobs</CardTitle>
-              <CardDescription>Currently running</CardDescription>
+              <CardDescription>RUNNING</CardDescription>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
-              <span className="text-2xl font-semibold text-slate-50">—</span>
-              <span className="text-sm text-slate-300/70">Soon</span>
+              <span className="text-2xl font-semibold text-slate-50">
+                {activeJobs}
+              </span>
+              <span className="text-sm text-slate-300/70">Now</span>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-slate-100">Events Today</CardTitle>
-              <CardDescription>Last 24 hours</CardDescription>
+              <CardTitle className="text-slate-100">Events</CardTitle>
+              <CardDescription>Total</CardDescription>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
-              <span className="text-2xl font-semibold text-slate-50">—</span>
+              <span className="text-2xl font-semibold text-slate-50">
+                {totalEvents}
+              </span>
               <span className="text-sm text-slate-300/70">Auto</span>
             </CardContent>
           </Card>
@@ -66,11 +110,13 @@ export default function Home() {
           <Card>
             <CardHeader>
               <CardTitle className="text-slate-100">Artifacts</CardTitle>
-              <CardDescription>CSV / files</CardDescription>
+              <CardDescription>Downloads + links</CardDescription>
             </CardHeader>
             <CardContent className="flex items-center justify-between">
-              <span className="text-2xl font-semibold text-slate-50">—</span>
-              <span className="text-sm text-slate-300/70">Soon</span>
+              <span className="text-2xl font-semibold text-slate-50">
+                {totalArtifacts}
+              </span>
+              <span className="text-sm text-slate-300/70">Files</span>
             </CardContent>
           </Card>
         </div>
@@ -79,7 +125,7 @@ export default function Home() {
           <Card className="lg:col-span-1">
             <CardHeader>
               <CardTitle className="text-slate-100">Recent Activity</CardTitle>
-              <CardDescription>What I'm doing right now</CardDescription>
+              <CardDescription>Events stream</CardDescription>
             </CardHeader>
             <CardContent>
               <ActivityStream />
@@ -88,11 +134,35 @@ export default function Home() {
 
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle className="text-slate-100">Operations View</CardTitle>
-              <CardDescription>Map / status board (next)</CardDescription>
+              <CardTitle className="text-slate-100">Now (In Progress)</CardTitle>
+              <CardDescription>What Marina is working on</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="h-[280px] rounded-lg border border-white/10 bg-gradient-to-br from-blue-500/10 to-transparent" />
+            <CardContent className="space-y-2">
+              {nowTasks.length === 0 ? (
+                <div className="text-sm text-slate-300/70">
+                  No tasks in progress.
+                </div>
+              ) : (
+                nowTasks.map((t: any) => (
+                  <Link
+                    key={t.id}
+                    href={`/tasks/${t.id}`}
+                    className="block rounded-lg border border-white/10 bg-black/20 px-3 py-2 hover:bg-black/30"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0 truncate text-sm font-medium text-slate-100">
+                        {t.title}
+                      </div>
+                      <div className="shrink-0 text-xs text-slate-400">
+                        {new Date(t.updatedAt as any).toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="mt-1 text-xs text-slate-300/70">
+                      owner: {t.owner} · priority: {t.priority}
+                    </div>
+                  </Link>
+                ))
+              )}
             </CardContent>
           </Card>
         </div>

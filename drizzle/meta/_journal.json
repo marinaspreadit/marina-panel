@@ -22,6 +22,20 @@
       "when": 1770841913949,
       "tag": "0002_small_magus",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770886897279,
+      "tag": "0003_add_task_fields_and_link_jobs",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770888993797,
+      "tag": "0004_artifacts_inline_storage",
+      "breakpoints": true
     }
   ]
 }

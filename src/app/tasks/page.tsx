@@ -11,10 +11,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 async function createTask(formData: FormData) {
   "use server";
   const title = String(formData.get("title") || "").trim();
+  const owner = String(formData.get("owner") || "Marina").trim() || "Marina";
+  const priority = Number(formData.get("priority") || 2);
   if (!title) return;
 
   const db = requireDb();
-  await db.insert(tasks).values({ title, status: "TODO" });
+  await db.insert(tasks).values({
+    title,
+    status: "READY",
+    owner,
+    priority: Number.isFinite(priority) ? priority : 2,
+    updatedAt: new Date(),
+  } as any);
 
   const { logEvent } = await import("@/lib/events");
   await logEvent({
@@ -29,35 +37,56 @@ export default async function TasksPage() {
   const rows = await db.select().from(tasks).orderBy(desc(tasks.createdAt));
 
   const cols = [
-    { key: "TODO", title: "TODO" },
-    { key: "WAITING", title: "WAITING" },
-    { key: "DONE", title: "DONE" },
+    { key: "READY", title: "Ready" },
+    { key: "IN_PROGRESS", title: "In Progress" },
+    { key: "BLOCKED", title: "Blocked" },
+    { key: "DONE", title: "Done" },
   ] as const;
 
   return (
     <AppShell>
       <div className="mx-auto max-w-6xl space-y-6">
-        <div className="flex items-end justify-between gap-4">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-50">
               Tasks
             </h1>
             <p className="mt-1 text-sm text-slate-300/80">
-              DB-backed kanban.
+              Ready / In Progress / Blocked / Done.
             </p>
           </div>
 
-          <form action={createTask} className="flex items-center gap-2">
-            <input
-              name="title"
-              placeholder="New task…"
-              className="h-9 w-64 rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500"
-            />
-            <Button type="submit">Add</Button>
+          <form
+            action={createTask}
+            className="w-full max-w-xl rounded-lg border border-white/10 bg-black/20 p-3"
+          >
+            <div className="flex flex-col gap-2 md:flex-row">
+              <input
+                name="title"
+                placeholder="+ New task (title)…"
+                className="h-10 flex-1 rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500"
+              />
+              <input
+                name="owner"
+                placeholder="owner"
+                defaultValue="Marina"
+                className="h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500 md:w-40"
+              />
+              <select
+                name="priority"
+                defaultValue={2}
+                className="h-10 w-full rounded-md border border-white/10 bg-white/5 px-2 text-sm text-slate-100 outline-none focus:border-blue-500 md:w-32"
+              >
+                <option value={1}>High</option>
+                <option value={2}>Normal</option>
+                <option value={3}>Low</option>
+              </select>
+              <Button type="submit" className="h-10">Create</Button>
+            </div>
           </form>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-4">
           {cols.map((col) => {
             const items = rows.filter((t) => t.status === col.key);
             return (
