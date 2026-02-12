@@ -60,21 +60,26 @@ export function ActivityStream({ className }: { className?: string }) {
           events.slice(0, 10).map((e) => (
             <div
               key={e.id}
-              className="flex items-start justify-between gap-3 rounded-lg border border-white/10 bg-black/20 px-3 py-2"
+              className="rounded-lg border border-white/10 bg-black/20 px-3 py-2"
             >
-              <div className="min-w-0">
-                <div className="truncate text-sm text-slate-100">{e.title}</div>
-                {e.detail ? (
-                  <div className="truncate text-xs text-slate-400">{e.detail}</div>
-                ) : null}
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="truncate text-sm text-slate-100">{e.title}</div>
+                  {e.detail ? (
+                    <div className="truncate text-xs text-slate-400">{e.detail}</div>
+                  ) : null}
+                </div>
+                <div
+                  className={
+                    "shrink-0 rounded-full px-2 py-0.5 text-[11px] " +
+                    pillClass(e.kind)
+                  }
+                >
+                  {e.kind}
+                </div>
               </div>
-              <div
-                className={
-                  "shrink-0 rounded-full px-2 py-0.5 text-[11px] " +
-                  pillClass(e.kind)
-                }
-              >
-                {e.kind}
+              <div className="mt-1 text-[11px] text-slate-400">
+                {new Date(e.createdAt).toLocaleString()}
               </div>
             </div>
           ))
