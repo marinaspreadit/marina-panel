@@ -251,8 +251,8 @@ export default async function ScraperPage() {
                 max={200}
                 className="h-10 rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 outline-none focus:border-blue-500"
               />
-              <div className="md:col-span-4 flex justify-end">
-                <Button type="submit">RUN</Button>
+              <div className="md:col-span-4 flex justify-stretch md:justify-end">
+                <Button type="submit" className="h-11 w-full md:w-auto">RUN</Button>
               </div>
             </form>
           </CardContent>
@@ -273,7 +273,7 @@ export default async function ScraperPage() {
                     key={j.id}
                     className="rounded-lg border border-white/10 bg-black/20 px-3 py-2"
                   >
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                       <div className="text-sm font-medium text-slate-100">
                         {j.status} · {j.type}
                       </div>
@@ -290,9 +290,9 @@ export default async function ScraperPage() {
                           <a
                             key={a.id}
                             href={`/api/artifacts/${a.id}/download`}
-                            className="block truncate text-sm text-blue-300 hover:text-blue-200"
+                            className="inline-flex h-10 w-full items-center justify-center rounded-md border border-white/10 bg-white/5 px-4 text-sm text-slate-100 hover:bg-white/10 md:w-auto"
                           >
-                            {a.name} (download)
+                            Download: {a.name}
                           </a>
                         ))
                       ) : (

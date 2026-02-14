@@ -64,20 +64,20 @@ export default async function JobsPage() {
                     ) : null}
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <div className="text-xs text-slate-300/80 font-mono break-words">
+                    <div className="break-words rounded-md border border-white/10 bg-black/10 p-2 text-xs font-mono text-slate-300/80">
                       {j.payloadJson}
                     </div>
                     {a.length ? (
-                      <div className="space-y-1">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                         {a.map((x) => (
                           <a
                             key={x.id}
                             href={x.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="block truncate text-sm text-blue-300 hover:text-blue-200"
+                            className="inline-flex h-10 w-full items-center justify-center rounded-md border border-white/10 bg-white/5 px-4 text-sm text-slate-100 hover:bg-white/10 sm:w-auto"
                           >
-                            {x.name}
+                            Open: {x.name}
                           </a>
                         ))}
                       </div>

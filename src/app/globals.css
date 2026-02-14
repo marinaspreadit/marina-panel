@@ -19,8 +19,16 @@
   }
 }
 
+html,
 body {
-  background: var(--background);
+  height: 100%;
+}
+
+body {
+  /* Keep the global page background dark to avoid white gutters on mobile
+     if any child layout accidentally overflows horizontally. */
+  background: #070b17;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }

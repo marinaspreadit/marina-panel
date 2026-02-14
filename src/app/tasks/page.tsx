@@ -81,7 +81,7 @@ export default async function TasksPage() {
                 <option value={2}>Normal</option>
                 <option value={3}>Low</option>
               </select>
-              <Button type="submit" className="h-10">Create</Button>
+              <Button type="submit" className="h-10 w-full md:w-auto">Create</Button>
             </div>
           </form>
         </div>
@@ -90,7 +90,7 @@ export default async function TasksPage() {
           {cols.map((col) => {
             const items = rows.filter((t) => t.status === col.key);
             return (
-              <Card key={col.key} className="min-h-[360px]">
+              <Card key={col.key} className="md:min-h-[360px]">
                 <CardHeader>
                   <CardTitle className="text-slate-100">
                     {col.title} <span className="text-slate-400">({items.length})</span>
@@ -103,15 +103,19 @@ export default async function TasksPage() {
                     items.map((t) => (
                       <div
                         key={t.id}
-                        className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-slate-100"
+                        className="rounded-lg border border-white/10 bg-black/20 p-3 text-slate-100"
                       >
-                        <div className="min-w-0 truncate">{t.title}</div>
-                        <a
-                          href={`/tasks/${t.id}`}
-                          className="shrink-0 text-xs text-blue-300 hover:text-blue-200"
-                        >
-                          Open
-                        </a>
+                        <div className="text-sm font-medium leading-snug">
+                          {t.title}
+                        </div>
+                        <div className="mt-2 flex items-center justify-end">
+                          <a
+                            href={`/tasks/${t.id}`}
+                            className="inline-flex h-10 items-center justify-center rounded-md border border-white/10 bg-white/5 px-4 text-sm text-slate-100 hover:bg-white/10"
+                          >
+                            Open
+                          </a>
+                        </div>
                       </div>
                     ))
                   )}

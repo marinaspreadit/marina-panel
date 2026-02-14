@@ -27,8 +27,20 @@ export function MobileNav() {
 
   useEffect(() => {
     // Close on route change
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    // Prevent background scroll while the mobile menu is open.
+    // (Important on iOS where fixed overlays can still allow scroll.)
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   return (
     <>

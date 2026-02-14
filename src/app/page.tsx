@@ -57,12 +57,12 @@ export default async function Home() {
               What’s happening now + downloads.
             </p>
           </div>
-          <div className="flex gap-2">
-            <Link href="/tasks">
-              <Button>+ New task</Button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Link href="/tasks" className="sm:inline-block">
+              <Button className="h-11 w-full sm:w-auto">+ New task</Button>
             </Link>
-            <Link href="/jobs">
-              <Button variant="secondary">Jobs</Button>
+            <Link href="/jobs" className="sm:inline-block">
+              <Button variant="secondary" className="h-11 w-full sm:w-auto">Jobs</Button>
             </Link>
           </div>
         </div>

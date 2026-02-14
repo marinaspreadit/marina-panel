@@ -128,13 +128,13 @@ export default async function TaskDetailPage({
   return (
     <AppShell>
       <div className="mx-auto max-w-3xl space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-xl font-semibold text-slate-50">Task</h1>
             <div className="mt-1 text-sm text-slate-300/80">{task[0].title}</div>
           </div>
-          <Link href="/tasks">
-            <Button variant="secondary">Back</Button>
+          <Link href="/tasks" className="w-full sm:w-auto">
+            <Button variant="secondary" className="h-10 w-full sm:w-auto">Back</Button>
           </Link>
         </div>
 
@@ -191,8 +191,8 @@ export default async function TaskDetailPage({
                 />
               </label>
 
-              <div className="flex justify-end">
-                <Button type="submit">Save</Button>
+              <div className="flex justify-stretch sm:justify-end">
+                <Button type="submit" className="h-10 w-full sm:w-auto">Save</Button>
               </div>
             </form>
           </CardContent>
@@ -214,7 +214,7 @@ export default async function TaskDetailPage({
                 placeholder='payload JSON (optional) e.g. {"limit":50}'
                 className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500"
               />
-              <Button type="submit">Create job</Button>
+              <Button type="submit" className="h-9 w-full md:w-auto">Create job</Button>
             </form>
 
             {jobRows.length === 0 ? (
@@ -241,7 +241,6 @@ export default async function TaskDetailPage({
                         <div className="grid gap-3">
                           <form
                             action={addArtifact.bind(null, j.id)}
-                            encType="multipart/form-data"
                             className="grid gap-2 md:grid-cols-[1fr_2fr_auto]"
                           >
                             <input
@@ -254,14 +253,17 @@ export default async function TaskDetailPage({
                               placeholder="paste a URL"
                               className="h-9 rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500"
                             />
-                            <Button type="submit" variant="secondary">
+                            <Button
+                              type="submit"
+                              variant="secondary"
+                              className="h-9 w-full md:w-auto"
+                            >
                               Add link
                             </Button>
                           </form>
 
                           <form
                             action={addArtifact.bind(null, j.id)}
-                            encType="multipart/form-data"
                             className="grid gap-2 md:grid-cols-[1fr_2fr_auto]"
                           >
                             <input
@@ -274,7 +276,7 @@ export default async function TaskDetailPage({
                               name="file"
                               className="w-full text-sm text-slate-300 file:mr-3 file:rounded-md file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-sm file:text-slate-100 hover:file:bg-white/15"
                             />
-                            <Button type="submit">Upload file</Button>
+                            <Button type="submit" className="h-9 w-full md:w-auto">Upload file</Button>
                           </form>
                         </div>
 
@@ -323,8 +325,8 @@ export default async function TaskDetailPage({
                 placeholder="Write a comment…"
                 className="h-24 w-full resize-none rounded-md border border-white/10 bg-white/5 p-3 text-sm text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500"
               />
-              <div className="flex justify-end">
-                <Button type="submit">Add comment</Button>
+              <div className="flex justify-stretch sm:justify-end">
+                <Button type="submit" className="h-10 w-full sm:w-auto">Add comment</Button>
               </div>
             </form>
 
