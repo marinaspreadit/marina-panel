@@ -49,7 +49,7 @@ function toCsv(rows: Record<string, any>[], header: string[]) {
   return lines.join("\n") + "\n";
 }
 
-async function fallbackScrape({ query, city, vertical, limit }: any) {
+async function fallbackScrape({ city, vertical, limit }: any) {
   // Minimal fallback: for BCN peluquerías we use Sants directory as a source.
   const header = [
     "vertical",
