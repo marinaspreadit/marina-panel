@@ -23,7 +23,7 @@ npm run build
 - /: top CTA buttons full width on mobile, no horizontal scroll
 - /tasks: create task form stacks nicely, can open a task
 - /tasks/[id]: main actions reachable, notes area usable
-- /jobs: payload box wraps, artifacts buttons full-width on mobile
+- /jobs: payload box wraps, artifacts buttons full-width on mobile; artifact links work even when `artifacts.url` is empty (fallback to `/api/artifacts/:id/download`)
 - /scraper: run form stacks, RUN button full-width, download works
 
 ## Known warnings
