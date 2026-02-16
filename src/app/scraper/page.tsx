@@ -10,8 +10,7 @@ import { artifacts, jobs, tasks } from "@/db/schema";
 import { desc, eq, inArray } from "drizzle-orm";
 import { logEvent } from "@/lib/events";
 
-// DB task title (keep stable to avoid duplicating tasks in existing prod DB)
-const SCRAPER_TASK_TITLE = "Scraper (runs)";
+const SCRAPER_TASK_TITLE = "G-News (runs)";
 
 async function getOrCreateScraperTaskId() {
   const db = requireDb();
