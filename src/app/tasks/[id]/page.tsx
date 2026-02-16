@@ -85,6 +85,22 @@ async function addArtifact(jobId: string, formData: FormData) {
   await logEvent({ kind: "success", title: "Artifact linked", detail: name });
 }
 
+async function deleteArtifact(artifactId: string) {
+  "use server";
+  const db = requireDb();
+  await db.delete(artifacts).where(eq(artifacts.id, artifactId));
+  await logEvent({ kind: "info", title: "Artifact deleted", detail: artifactId });
+}
+
+async function deleteJob(jobId: string) {
+  "use server";
+  const db = requireDb();
+  // delete artifacts first (FK not enforced here, but keeps UI clean)
+  await db.delete(artifacts).where(eq(artifacts.jobId, jobId));
+  await db.delete(jobs).where(eq(jobs.id, jobId));
+  await logEvent({ kind: "info", title: "Job deleted", detail: jobId });
+}
+
 export default async function TaskDetailPage({
   params,
 }: {
@@ -227,8 +243,19 @@ export default async function TaskDetailPage({
                       <div className="text-sm font-medium text-slate-100">
                         {j.type} <span className="text-slate-400">({j.status})</span>
                       </div>
-                      <div className="text-xs text-slate-400">
-                        {new Date(j.createdAt as any).toLocaleString()}
+                      <div className="flex items-center gap-2">
+                        <div className="text-xs text-slate-400">
+                          {new Date(j.createdAt as any).toLocaleString()}
+                        </div>
+                        <form action={deleteJob.bind(null, j.id)}>
+                          <Button
+                            type="submit"
+                            variant="secondary"
+                            className="h-8 px-3 text-xs"
+                          >
+                            Delete
+                          </Button>
+                        </form>
                       </div>
                     </div>
 
@@ -289,18 +316,28 @@ export default async function TaskDetailPage({
                                   ? `/api/artifacts/${a.id}/download`
                                   : a.url;
                               return (
-                                <a
-                                  key={a.id}
-                                  href={href}
-                                  className="block truncate text-sm text-blue-300 hover:text-blue-200"
-                                  target={a.storage === "inline" ? undefined : "_blank"}
-                                  rel={a.storage === "inline" ? undefined : "noreferrer"}
-                                >
-                                  {a.name}
-                                  <span className="text-slate-400">
-                                    {a.storage === "inline" ? " (download)" : " (link)"}
-                                  </span>
-                                </a>
+                                <div key={a.id} className="flex items-center justify-between gap-2">
+                                  <a
+                                    href={href}
+                                    className="min-w-0 flex-1 truncate text-sm text-blue-300 hover:text-blue-200"
+                                    target={a.storage === "inline" ? undefined : "_blank"}
+                                    rel={a.storage === "inline" ? undefined : "noreferrer"}
+                                  >
+                                    {a.name}
+                                    <span className="text-slate-400">
+                                      {a.storage === "inline" ? " (download)" : " (link)"}
+                                    </span>
+                                  </a>
+                                  <form action={deleteArtifact.bind(null, a.id)}>
+                                    <Button
+                                      type="submit"
+                                      variant="secondary"
+                                      className="h-7 px-2 text-[11px]"
+                                    >
+                                      Delete
+                                    </Button>
+                                  </form>
+                                </div>
                               );
                             })}
                         </div>
