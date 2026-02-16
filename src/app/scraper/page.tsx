@@ -10,7 +10,7 @@ import { artifacts, jobs, tasks } from "@/db/schema";
 import { desc, eq, inArray } from "drizzle-orm";
 import { logEvent } from "@/lib/events";
 
-const SCRAPER_TASK_TITLE = "Scraper (runs)";
+const SCRAPER_TASK_TITLE = "G-News (runs)";
 
 async function getOrCreateScraperTaskId() {
   const db = requireDb();
@@ -212,10 +212,10 @@ export default async function ScraperPage() {
       <div className="mx-auto max-w-6xl space-y-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-50">
-            Scraper
+            G-News
           </h1>
           <p className="mt-1 text-sm text-slate-300/80">
-            Run and download results.
+            Lead intake → site draft → outreach copy → send queue.
           </p>
           <div className="mt-1 text-xs text-slate-400">
             build: {build.env} · {build.commit.slice(0, 7)}
