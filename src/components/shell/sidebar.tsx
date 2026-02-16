@@ -8,7 +8,7 @@ const coreItems = [{ href: "/", label: "Home", icon: LayoutGrid }];
 const opsItems = [
   { href: "/tasks", label: "Tasks", icon: ListTodo },
   { href: "/jobs", label: "Jobs", icon: PlaySquare },
-  { href: "/scraper", label: "G-News", icon: Wrench },
+  { href: "/scraper", label: "Scraper", icon: Wrench },
 ];
 const systemItems = [{ href: "/settings", label: "Settings", icon: Settings }];
 
