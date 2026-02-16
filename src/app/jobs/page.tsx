@@ -69,17 +69,23 @@ export default async function JobsPage() {
                     </div>
                     {a.length ? (
                       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                        {a.map((x) => (
-                          <a
-                            key={x.id}
-                            href={x.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex h-10 w-full items-center justify-center rounded-md border border-white/10 bg-white/5 px-4 text-sm text-slate-100 hover:bg-white/10 sm:w-auto"
-                          >
-                            Open: {x.name}
-                          </a>
-                        ))}
+                        {a.map((x) => {
+                          const href = x.url?.trim()
+                            ? x.url
+                            : `/api/artifacts/${x.id}/download`;
+                          const isExternal = href.startsWith("http://") || href.startsWith("https://");
+                          return (
+                            <a
+                              key={x.id}
+                              href={href}
+                              target={isExternal ? "_blank" : undefined}
+                              rel={isExternal ? "noreferrer" : undefined}
+                              className="inline-flex h-10 w-full items-center justify-center rounded-md border border-white/10 bg-white/5 px-4 text-sm text-slate-100 hover:bg-white/10 sm:w-auto"
+                            >
+                              Open: {x.name}
+                            </a>
+                          );
+                        })}
                       </div>
                     ) : (
                       <div className="text-sm text-slate-300/70">No artifacts.</div>
