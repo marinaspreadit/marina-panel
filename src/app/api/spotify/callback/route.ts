@@ -81,7 +81,25 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // For MVP: show success (later: store refresh_token + use it server-side)
+  // Store refresh token in DB (single-user MVP)
+  try {
+    const { requireDb } = await import("@/db");
+    const { spotifyTokens } = await import("@/db/schema");
+    const db = requireDb();
+
+    if (tokenJson.refresh_token) {
+      // naive upsert: clear table then insert single row
+      await db.delete(spotifyTokens);
+      await db.insert(spotifyTokens).values({
+        refreshToken: tokenJson.refresh_token,
+        scope: tokenJson.scope || "",
+        tokenType: tokenJson.token_type || "",
+      });
+    }
+  } catch {
+    // If DB isn't available, don't fail the OAuth.
+  }
+
   return NextResponse.json({
     ok: true,
     state,
@@ -89,6 +107,7 @@ export async function GET(req: NextRequest) {
     expires_in: tokenJson.expires_in,
     scope: tokenJson.scope,
     has_refresh_token: Boolean(tokenJson.refresh_token),
+    stored: Boolean(tokenJson.refresh_token),
   });
 }
 

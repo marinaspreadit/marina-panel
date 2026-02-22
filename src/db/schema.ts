@@ -56,3 +56,13 @@ export const taskComments = pgTable("task_comments", {
   body: text("body").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// Spotify OAuth tokens (single-user for now)
+export const spotifyTokens = pgTable("spotify_tokens", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  // Store refresh_token to get new access tokens.
+  refreshToken: text("refresh_token").notNull().default(""),
+  scope: text("scope").notNull().default(""),
+  tokenType: text("token_type").notNull().default(""),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});

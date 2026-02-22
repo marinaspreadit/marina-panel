@@ -36,6 +36,13 @@
       "when": 1770888993797,
       "tag": "0004_artifacts_inline_storage",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1771786284218,
+      "tag": "0005_spotify_tokens",
+      "breakpoints": true
     }
   ]
 }
