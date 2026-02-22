@@ -4,9 +4,12 @@ import { requireDb } from "@/db";
 import { tasks } from "@/db/schema";
 import { desc } from "drizzle-orm";
 
+import Link from "next/link";
+
 import { AppShell } from "@/components/shell/app-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 async function createTask(formData: FormData) {
   "use server";
@@ -32,9 +35,21 @@ async function createTask(formData: FormData) {
   });
 }
 
-export default async function TasksPage() {
+export default async function TasksPage({
+  searchParams,
+}: {
+  searchParams?: { q?: string };
+}) {
   const db = requireDb();
   const rows = await db.select().from(tasks).orderBy(desc(tasks.createdAt));
+
+  const q = String(searchParams?.q || "").trim().toLowerCase();
+  const filteredRows = q
+    ? rows.filter((t) => {
+        const hay = `${t.title} ${(t as any).owner ?? ""} ${t.status}`.toLowerCase();
+        return hay.includes(q);
+      })
+    : rows;
 
   const cols = [
     { key: "READY", title: "Ready" },
@@ -53,14 +68,40 @@ export default async function TasksPage() {
             </h1>
             <p className="mt-1 text-sm text-slate-300/80">
               Ready / In Progress / Blocked / Done.
+              {q ? (
+                <span className="ml-2 text-slate-400">
+                  (filtered by &quot;{q}&quot; · {filteredRows.length}/{rows.length})
+                </span>
+              ) : null}
             </p>
           </div>
 
-          <form
-            action={createTask}
-            className="w-full max-w-xl rounded-lg border border-white/10 bg-black/20 p-3"
-          >
-            <div className="flex flex-col gap-2 md:flex-row">
+          <div className="w-full max-w-xl space-y-2">
+            <form method="GET" className="rounded-lg border border-white/10 bg-black/20 p-3">
+              <div className="flex flex-col gap-2 md:flex-row">
+                <input
+                  name="q"
+                  defaultValue={searchParams?.q || ""}
+                  placeholder="Search tasks (title/owner/status)…"
+                  className="h-10 flex-1 rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-100 placeholder:text-slate-400 outline-none focus:border-blue-500"
+                />
+                <Button type="submit" className="h-10 w-full md:w-auto">
+                  Search
+                </Button>
+                <Link
+                  href="/tasks"
+                  className="inline-flex h-10 w-full items-center justify-center rounded-md border border-white/10 bg-white/5 px-4 text-sm text-slate-100 hover:bg-white/10 md:w-auto"
+                >
+                  Clear
+                </Link>
+              </div>
+            </form>
+
+            <form
+              action={createTask}
+              className="rounded-lg border border-white/10 bg-black/20 p-3"
+            >
+              <div className="flex flex-col gap-2 md:flex-row">
               <input
                 name="title"
                 placeholder="+ New task (title)…"
@@ -82,13 +123,24 @@ export default async function TasksPage() {
                 <option value={3}>Low</option>
               </select>
               <Button type="submit" className="h-10 w-full md:w-auto">Create</Button>
-            </div>
-          </form>
+              </div>
+            </form>
+          </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-4">
           {cols.map((col) => {
-            const items = rows.filter((t) => t.status === col.key);
+            const items = filteredRows
+              .filter((t) => t.status === col.key)
+              .sort((a, b) => {
+                // priority: 1 (high) first; then most recently updated/created
+                const pa = (a as any).priority ?? 2;
+                const pb = (b as any).priority ?? 2;
+                if (pa !== pb) return pa - pb;
+                const ta = (a as any).updatedAt?.getTime?.() ?? (a as any).createdAt?.getTime?.() ?? 0;
+                const tb = (b as any).updatedAt?.getTime?.() ?? (b as any).createdAt?.getTime?.() ?? 0;
+                return tb - ta;
+              });
             return (
               <Card key={col.key} className="md:min-h-[360px]">
                 <CardHeader>
@@ -105,10 +157,23 @@ export default async function TasksPage() {
                         key={t.id}
                         className="rounded-lg border border-white/10 bg-black/20 p-3 text-slate-100"
                       >
-                        <div className="text-sm font-medium leading-snug">
-                          {t.title}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="text-sm font-medium leading-snug">
+                            {t.title}
+                          </div>
+                          <Badge
+                            variant={(t as any).priority === 1 ? "red" : (t as any).priority === 3 ? "gray" : "blue"}
+                            className="shrink-0"
+                          >
+                            P{(t as any).priority ?? 2}
+                          </Badge>
                         </div>
-                        <div className="mt-2 flex items-center justify-end">
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          <div className="text-xs text-slate-400">
+                            <span className="text-slate-300/80">{(t as any).owner ?? "Marina"}</span>
+                            <span className="mx-2 text-slate-500">•</span>
+                            Updated {new Date(((t as any).updatedAt ?? (t as any).createdAt) as any).toLocaleString()}
+                          </div>
                           <a
                             href={`/tasks/${t.id}`}
                             className="inline-flex h-10 items-center justify-center rounded-md border border-white/10 bg-white/5 px-4 text-sm text-slate-100 hover:bg-white/10"

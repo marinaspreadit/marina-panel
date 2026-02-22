@@ -11,6 +11,7 @@ import { AppShell } from "@/components/shell/app-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { logEvent } from "@/lib/events";
+import { CopyButton } from "@/components/ui/copy-button";
 
 async function addComment(taskId: string, formData: FormData) {
   "use server";
@@ -260,8 +261,13 @@ export default async function TaskDetailPage({
                     </div>
 
                     <div className="mt-2 grid gap-2 md:grid-cols-2">
-                      <div className="text-xs text-slate-300/80">
-                        <div className="font-mono break-words">{j.payloadJson}</div>
+                      <div className="rounded-md border border-white/10 bg-black/10 p-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1 break-words text-xs font-mono text-slate-300/80">
+                            {j.payloadJson}
+                          </div>
+                          <CopyButton text={j.payloadJson as any} label="Copy payload" />
+                        </div>
                       </div>
 
                       <div className="space-y-2">
@@ -308,9 +314,14 @@ export default async function TaskDetailPage({
                         </div>
 
                         <div className="space-y-1">
-                          {artifactRows
-                            .filter((a) => a.jobId === j.id)
-                            .map((a: any) => {
+                          {(() => {
+                            const list = artifactRows.filter((a) => a.jobId === j.id);
+                            if (list.length === 0) {
+                              return (
+                                <div className="text-sm text-slate-300/70">No artifacts yet.</div>
+                              );
+                            }
+                            return list.map((a: any) => {
                               const href =
                                 a.storage === "inline"
                                   ? `/api/artifacts/${a.id}/download`
@@ -328,18 +339,22 @@ export default async function TaskDetailPage({
                                       {a.storage === "inline" ? " (download)" : " (link)"}
                                     </span>
                                   </a>
-                                  <form action={deleteArtifact.bind(null, a.id)}>
-                                    <Button
-                                      type="submit"
-                                      variant="secondary"
-                                      className="h-7 px-2 text-[11px]"
-                                    >
-                                      Delete
-                                    </Button>
-                                  </form>
+                                  <div className="flex items-center gap-2">
+                                    <CopyButton text={href} label="Copy link" />
+                                    <form action={deleteArtifact.bind(null, a.id)}>
+                                      <Button
+                                        type="submit"
+                                        variant="secondary"
+                                        className="h-7 px-2 text-[11px]"
+                                      >
+                                        Delete
+                                      </Button>
+                                    </form>
+                                  </div>
                                 </div>
                               );
-                            })}
+                            });
+                          })()}
                         </div>
                       </div>
                     </div>

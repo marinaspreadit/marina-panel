@@ -1,40 +1,51 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 import { requireDb } from "@/db";
 import { artifacts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
-function b64ToUint8(b64: string) {
-  const bin = Buffer.from(b64, "base64");
-  return new Uint8Array(bin);
+function requireAuth(req: NextRequest) {
+  const pass = process.env.PANEL_PASSWORD;
+  if (!pass) return;
+  const cookie = req.cookies.get("mp_auth")?.value;
+  if (cookie !== pass) {
+    throw new Response("Unauthorized", { status: 401 });
+  }
 }
 
 export async function GET(
-  _req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
-  const db = requireDb();
-  const rows = await db.select().from(artifacts).where(eq(artifacts.id, id)).limit(1);
-  const a = rows[0];
-  if (!a) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  try {
+    requireAuth(req);
 
-  // For url-only artifacts, just redirect.
-  if ((a as any).storage === "url" || !(a as any).contentBase64) {
-    const url = (a as any).url as string;
-    if (!url) return NextResponse.json({ error: "No content" }, { status: 400 });
-    return NextResponse.redirect(url);
+    const { id } = await params;
+    const db = requireDb();
+    const rows = await db.select().from(artifacts).where(eq(artifacts.id, id)).limit(1);
+    const a: any = rows[0];
+
+    if (!a) return new NextResponse("Not found", { status: 404 });
+    if (a.storage !== "inline") return new NextResponse("Not an inline artifact", { status: 400 });
+    if (!a.contentBase64) return new NextResponse("Empty artifact", { status: 400 });
+
+    const buf = Buffer.from(a.contentBase64, "base64");
+    const filename = (a.filename || a.name || "artifact").replace(/[\r\n\"]/g, "_");
+
+    return new NextResponse(buf, {
+      status: 200,
+      headers: {
+        "content-type": a.mime || "application/octet-stream",
+        "content-length": String(buf.length),
+        "content-disposition": `attachment; filename="${filename}"`,
+        "cache-control": "private, max-age=0, must-revalidate",
+      },
+    });
+  } catch (err: any) {
+    if (err instanceof Response) return err;
+    return new NextResponse("Server error", { status: 500 });
   }
-
-  const mime = ((a as any).mime as string) || "application/octet-stream";
-  const filename = ((a as any).filename as string) || `${(a as any).name || "artifact"}`;
-
-  const bytes = b64ToUint8((a as any).contentBase64 as string);
-  return new NextResponse(bytes, {
-    headers: {
-      "Content-Type": mime,
-      "Content-Disposition": `attachment; filename=\"${filename.replaceAll('"', "") }\"`,
-      "Cache-Control": "no-store",
-    },
-  });
 }
