@@ -26,6 +26,12 @@ npm run build
 - /jobs: payload box wraps, artifacts buttons full-width on mobile; artifact links work even when `artifacts.url` is empty (fallback to `/api/artifacts/:id/download`)
 - /scraper: run form stacks, RUN button full-width, download works
 
+## Smoke tests (Spotify)
+- /api/spotify/status → ok:true when connected
+- /api/spotify/playlists → returns count + playlists
+- /api/spotify/playlist/<id>/tracks → returns count + tracks[] (with audio features when available)
+- /api/spotify/insights?playlistId=<id>&k=5 → returns topArtists + audioSummary + clustering (if enough tracks)
+
 ## Known warnings
 - Next.js warning: `middleware` convention deprecated → migrate to `proxy` when touching middleware next.
 - ESLint: we currently disable `@typescript-eslint/no-explicit-any` for faster iteration; tighten later.
