@@ -66,3 +66,20 @@ export const spotifyTokens = pgTable("spotify_tokens", {
   tokenType: text("token_type").notNull().default(""),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+// Tracks already processed from Liked Songs → playlists
+export const spotifyProcessedTracks = pgTable("spotify_processed_tracks", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  trackId: text("track_id").notNull(),
+  trackUri: text("track_uri").notNull().default(""),
+  trackName: text("track_name").notNull().default(""),
+  artists: text("artists").notNull().default(""),
+  likedAddedAt: timestamp("liked_added_at"),
+  processedAt: timestamp("processed_at").notNull().defaultNow(),
+  decision: text("decision").notNull().default(""),
+  confidence: integer("confidence").notNull().default(0),
+  targetPlaylistName: text("target_playlist_name").notNull().default(""),
+  targetPlaylistId: text("target_playlist_id").notNull().default(""),
+  actionStatus: text("action_status").notNull().default("queued"),
+  error: text("error").notNull().default(""),
+});

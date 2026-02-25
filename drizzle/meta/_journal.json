@@ -43,6 +43,13 @@
       "when": 1771786284218,
       "tag": "0005_spotify_tokens",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1771992094589,
+      "tag": "0006_absurd_sersi",
+      "breakpoints": true
     }
   ]
 }
