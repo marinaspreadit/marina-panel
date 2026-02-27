@@ -60,17 +60,15 @@ export async function POST(req: Request) {
     if (!userId) throw new Error("Spotify /me did not return id");
 
     // Create playlist
-    const createRes = await fetch(
-      `https://api.spotify.com/v1/users/${encodeURIComponent(userId)}/playlists`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, public: isPublic, description }),
-      }
-    );
+    // Prefer /v1/me/playlists (avoids edge cases with user ids / permissions).
+    const createRes = await fetch("https://api.spotify.com/v1/me/playlists", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, public: isPublic, description }),
+    });
 
     const createJson = await createRes.json().catch(() => ({}));
     if (!createRes.ok) {
