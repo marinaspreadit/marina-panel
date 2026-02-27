@@ -176,8 +176,10 @@ export async function POST(req: Request) {
       .filter((x) => !!x.trackId && !!x.trackUri);
 
     const { requireDb } = await import("@/db");
+    const { ensureMigrations } = await import("@/db/migrate");
     const { spotifyProcessedTracks } = await import("@/db/schema");
     const db = requireDb();
+    await ensureMigrations(db);
 
     // 2) remove already processed
     const ids = liked.map((t) => t.trackId as string);
