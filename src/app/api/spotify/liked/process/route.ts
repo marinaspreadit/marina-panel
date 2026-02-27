@@ -66,7 +66,7 @@ type Decision = {
 };
 
 function decide(a: Audio | null): Decision {
-  if (!a) return { playlistName: "Unsorted / Review", confidence: 10, rule: "no_audio_features" };
+  if (!a) return { playlistName: "Unsorted", confidence: 10, rule: "no_audio_features" };
 
   // Rules from artifacts/spotify_liked_songs_to_playlists_plan_v1.md (MVP)
   // NOTE: We purposely keep it simple + interpretable.
@@ -87,7 +87,7 @@ function decide(a: Audio | null): Decision {
     return { playlistName: "Valth", confidence: 70, rule: "valth_v1" };
   }
 
-  return { playlistName: "Unsorted / Review", confidence: 30, rule: "fallback_unsorted" };
+  return { playlistName: "Unsorted", confidence: 30, rule: "fallback_unsorted" };
 }
 
 async function fetchAllPlaylists(accessToken: string) {
