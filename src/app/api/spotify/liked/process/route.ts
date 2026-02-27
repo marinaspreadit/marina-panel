@@ -135,6 +135,18 @@ export async function POST(req: Request) {
   try {
     const url = new URL(req.url);
 
+    // Optional auth gate for cron/public deployments.
+    // If SPOTIFY_CRON_SECRET is set, callers must provide it via:
+    // - Header: x-cron-secret: <secret>
+    // - OR query param: ?secret=<secret>
+    const expected = process.env.SPOTIFY_CRON_SECRET;
+    if (expected) {
+      const got = req.headers.get("x-cron-secret") || url.searchParams.get("secret") || "";
+      if (got !== expected) {
+        return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+      }
+    }
+
     const dryRun = url.searchParams.get("dryRun") === "1" || url.searchParams.get("dryRun") === "true";
     const limit = Math.min(Number(url.searchParams.get("limit") || 20) || 20, 50);
 
